@@ -1,0 +1,73 @@
+body {
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: rgb(66, 62, 97);
+    padding: 20px
+}
+
+.screen {
+    border: 5px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgb(163, 163, 163);
+    align-items: flex-end;
+    height: 100px;
+}
+
+.history {
+    font-style: italic;
+    font-size: x-large;
+    color: rgb(59, 59, 59);
+}
+
+.current {
+    font-size: 50px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+button {
+    width: 80px;
+    height: 60px;
+    font-size: x-large;
+}
+
+.operand {
+    background-color: rgb(133, 133, 133);
+}
+
+.operator {
+    background-color: dimgray;
+}
+
+.clear {
+    background-color: firebrick;
+}
+
+.delete {
+    background-color: dodgerblue;
+}
