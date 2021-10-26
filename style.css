@@ -60,14 +60,14 @@ button {
     background-color: rgb(133, 133, 133);
 }
 
-.operator {
+.operator, .evaluate, .power, .sign {
     background-color: dimgray;
 }
 
-.clear {
+.allClear {
     background-color: firebrick;
 }
 
-.delete {
+.clear {
     background-color: dodgerblue;
 }
