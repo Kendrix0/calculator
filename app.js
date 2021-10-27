@@ -17,26 +17,50 @@ let lastPressed = ''
 function operate(num1, num2) {
     if (mode == 'power') {
         answer = (parseFloat(num1) ** parseFloat(num2));
+        pastNum = answer;
+        current.innerHTML = pastNum;
+        convertToExponential()
     } else if (mode == '÷') {
-        answer = (parseFloat(num1) / parseFloat(num2));
+        if (x == 0) {
+            current.innerHTML = 'Error!'
+        } else {
+            answer = (parseFloat(num1) / parseFloat(num2));
+            pastNum = answer;
+            current.innerHTML = pastNum;
+            convertToExponential()
+        }
     } else if (mode == '×') {
         answer = (parseFloat(num1) * parseFloat(num2));
+        pastNum = answer;
+        current.innerHTML = pastNum;
+        convertToExponential()
     } else if (mode == '+') {
         answer = (parseFloat(num1) + parseFloat(num2));
+        pastNum = answer;
+        current.innerHTML = pastNum;
+        convertToExponential()
     } else if (mode == '-') {
         answer = (parseFloat(num1) - parseFloat(num2));
+        pastNum = answer;
+        current.innerHTML = pastNum;
+        convertToExponential()
     } else {
-        answer = parseFloat(num2 || num1);
+        if (x == '') {
+            answer = pastNum
+            current.innerHTML = answer;
+            convertToExponential()
+        } else {
+            answer = x;
+            pastNum = x;
+            current.innerHTML = answer;
+        } 
     }
-    pastNum = answer;
-    current.innerHTML = pastNum
-    return answer
 }
 
 function cleanse() {
     x = '';
     current.innerHTML = '0';
-    lastPressed = ''
+    lastPressed = 'clear'
 }
 
 function updateHistory(e) {
@@ -63,6 +87,15 @@ function updateHistory(e) {
         }
     }
 }
+
+function convertToExponential() {
+    if (Math.abs(answer) >= 1000000000 || (Math.abs(answer) < 0.0000001) && answer != 0) {
+        displayX = parseFloat(answer).toExponential(5).toString();
+        current.innerHTML = displayX;
+    } else {
+        current.innerHTML = answer; 
+    }
+};
 
 allClear.onclick = () => {
     history.innerHTML = ''
@@ -94,7 +127,7 @@ window.addEventListener('keydown', (e) => {
 
 operands.forEach(btn => {
     btn.onclick = () => {
-        if (lastPressed == 'evaluate') {
+        if (lastPressed == 'evaluate' || lastPressed == 'clear') {
             x = '';
             lastPressed = 'operand'
             mode = 'none'
@@ -104,10 +137,10 @@ operands.forEach(btn => {
             displayX = parseFloat(x).toExponential(5).toString()
             current.innerHTML = displayX;
         } else {
-           current.innerHTML = x; 
+            current.innerHTML = x; 
         }
+        lastPressed = 'operand';
     }
-    lastPressed = 'operand'
 })
 
 operators.forEach(btn => {
@@ -155,11 +188,4 @@ evaluate.onclick = () => {;
     lastPressed = 'evaluate';
     updateHistory(evaluate);
     operate(pastNum, x);
-    if (Math.abs(answer) >= 1000000000 || (Math.abs(answer) < 0.0000001) && answer != 0) {
-        displayX = parseFloat(answer).toExponential(5).toString();
-        current.innerHTML = displayX;
-    } else {
-       current.innerHTML = answer; 
-    }
-    
 }
