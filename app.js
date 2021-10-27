@@ -36,6 +36,7 @@ function operate(num1, num2) {
 function cleanse() {
     x = '';
     current.innerHTML = '0';
+    lastPressed = ''
 }
 
 function updateHistory(e) {
@@ -51,13 +52,13 @@ function updateHistory(e) {
             history.innerHTML = parseFloat(x)
         }
     } else {
-        if (lastPressed = 'evaluate') {
-            history.innerHTML = displayPast + mode + x + '='
+        if (lastPressed == 'evaluate') {
+            history.innerHTML = displayPast + ' ' + mode + ' ' + x + ' ='
         } else {
             if (mode == 'power') {
                 history.innerHTML = displayPast + '^';
             } else {
-                history.innerHTML = displayPast + e.innerHTML;
+                history.innerHTML = displayPast +' ' + e.innerHTML;
             }
         }
     }
@@ -81,12 +82,10 @@ window.addEventListener('keydown', (e) => {
         if (!(x.length > 1) || ((x[0]=='-') && (x.length <= 2))) {
             x = '';
             current.innerHTML = 0;
-            nums[1] = parseFloat(x);
         } else {
-            newX = parseFloat(x.toString().slice(0,-1));
+            newX = x.slice(0,-1);
             x = newX
             current.innerHTML = newX;
-            nums[1] = parseFloat(newX);
         }
     } else {
         return
@@ -95,6 +94,11 @@ window.addEventListener('keydown', (e) => {
 
 operands.forEach(btn => {
     btn.onclick = () => {
+        if (lastPressed == 'evaluate') {
+            x = '';
+            lastPressed = 'operand'
+            mode = 'none'
+        }
         x += btn.innerHTML
         if (x >= 1000000000) {
             displayX = parseFloat(x).toExponential(5).toString()
@@ -111,20 +115,26 @@ operators.forEach(btn => {
         if (lastPressed != 'evaluate') {
             operate(pastNum, x)
         }
+        //pastNum = x
         x = '';
         mode = btn.innerHTML;
-        equalsPressed = 'operator';
+        lastPressed = 'operator';
         updateHistory(btn);
     }
 })
 
 sign.onclick = () => {
-    if (!equalsPressed) {
-        
+    if ((current.innerHTML === x) || lastPressed == 'operator') {
+        if (x=='') {
+            x += '-'
+        } else {
+            x = parseFloat(x) * -1;
+        }
+        current.innerHTML = x
+    } else {
+        pastNum *= -1;
+        current.innerHTML = pastNum;
     }
-    negX = parseFloat(answer) * -1;
-    x = negX;
-    current.innerHTML = x;
 }
 
 power.onclick = () => {
@@ -133,7 +143,7 @@ power.onclick = () => {
     }
     x = '';
     mode = 'power';
-    equalsPressed = false;
+    lastPressed = 'operator';
     updateHistory(power);
 }
 
@@ -141,7 +151,7 @@ evaluate.onclick = () => {;
     lastPressed = 'evaluate';
     updateHistory(evaluate);
     operate(pastNum, x);
-    if (answer >= 1000000000) {
+    if (Math.abs(answer) >= 1000000000 || (Math.abs(answer) < 0.0000001) && answer != 0) {
         displayX = parseFloat(answer).toExponential(5).toString();
         current.innerHTML = displayX;
     } else {
@@ -149,13 +159,3 @@ evaluate.onclick = () => {;
     }
     
 }
-
-// Need to correct how the sign change button behaves
-// Need to correct how operand entry behaves after evaluation (i.e evaluating 2+2
-//      then going straight into 4+5 should not display 24 then 5)
-
-// Need to correct pastNum behavior after pressing AC then operator(i.e AC -> 5 -> +
-//      should not display 0+... in history)
-
-// Need to correct updateHistory function so that it does not display
-//      pastNum operand x when x = '' (i.e 5+= since x is blank).
