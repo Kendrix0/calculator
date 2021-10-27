@@ -112,14 +112,18 @@ operands.forEach(btn => {
 
 operators.forEach(btn => {
     btn.onclick = () => {
-        if (lastPressed != 'evaluate') {
+        if (lastPressed == 'operator') {
+            mode = btn.innerHTML;
+            updateHistory(btn);
+        } else {
+            if (lastPressed != 'evaluate') {
             operate(pastNum, x)
+            }
+            x = '';
+            mode = btn.innerHTML;
+            lastPressed = 'operator';
+            updateHistory(btn);
         }
-        //pastNum = x
-        x = '';
-        mode = btn.innerHTML;
-        lastPressed = 'operator';
-        updateHistory(btn);
     }
 })
 
