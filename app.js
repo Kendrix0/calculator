@@ -1,6 +1,6 @@
 const operands = document.querySelectorAll('.operand');
 const operators = document.querySelectorAll('.operator');
-const evaluate = document.querySelector('.evaluate');
+const equals = document.querySelector('.evaluate');
 const current = document.querySelector('.current');
 const history = document.querySelector('.history');
 const allClear = document.querySelector('.allClear');
@@ -82,9 +82,40 @@ function updateHistory(e) {
             if (mode == 'power') {
                 history.innerHTML = displayPast + '^';
             } else {
-                history.innerHTML = displayPast +' ' + e.innerHTML;
+                history.innerHTML = displayPast +' ' + e;
             }
         }
+    }
+}
+
+function appendNumber(number) {
+    if (lastPressed == 'evaluate' || lastPressed == 'clear') {
+        x = '';
+        lastPressed = 'operand'
+        mode = 'none'
+    }
+    x += number
+    if (x >= 1000000000) {
+        displayX = parseFloat(x).toExponential(5).toString()
+        current.innerHTML = displayX;
+    } else {
+        current.innerHTML = x; 
+    }
+    lastPressed = 'operand';
+}
+
+function setOperation(operator) {
+    if (lastPressed == 'operator') {
+        mode = operator;
+        updateHistory(operator);
+    } else {
+        if (lastPressed != 'evaluate') {
+            operate(pastNum, x)
+        }
+        x = '';
+        mode = operator;
+        lastPressed = 'operator';
+        updateHistory(operator);
     }
 }
 
@@ -96,6 +127,40 @@ function convertToExponential() {
         current.innerHTML = answer; 
     }
 };
+
+function convertOperator(keyboardOperator) {
+    if (keyboardOperator === '/') return '÷'
+    if (keyboardOperator === '*') return '×'
+    if (keyboardOperator === '-') return '−'
+    if (keyboardOperator === '+') return '+'
+}
+
+function deleteNumber() {
+    if (!(x.length > 1) || ((x[0]=='-') && (x.length <= 2))) {
+        x = '';
+        current.innerHTML = 0;
+    } else {
+        newX = x.slice(0,-1);
+        x = newX
+        current.innerHTML = newX;
+    }
+}
+
+function evaluate() {
+    lastPressed = 'evaluate';
+    updateHistory(evaluate);
+    operate(pastNum, x);
+}
+
+function handleKeyboardInput(e) {
+    if (e.key >= 0 && e.key <= 9) appendNumber(e.key)
+    if (e.key === '.') appendNumber(e.key)
+    if (e.key === '=' || e.key === 'Enter') evaluate()
+    if (e.key === 'Backspace') deleteNumber()
+    if (e.key === 'Escape') cleanse()
+    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/')
+      setOperation(convertOperator(e.key))
+}
 
 allClear.onclick = () => {
     history.innerHTML = ''
@@ -110,53 +175,18 @@ clear.onclick = () => {
 }
 
 window.addEventListener('keydown', (e) => {
-    x = x.toString();
-    if (e.keyCode == 8) {
-        if (!(x.length > 1) || ((x[0]=='-') && (x.length <= 2))) {
-            x = '';
-            current.innerHTML = 0;
-        } else {
-            newX = x.slice(0,-1);
-            x = newX
-            current.innerHTML = newX;
-        }
-    } else {
-        return
-    }
+    handleKeyboardInput(e)
 })
 
 operands.forEach(btn => {
     btn.onclick = () => {
-        if (lastPressed == 'evaluate' || lastPressed == 'clear') {
-            x = '';
-            lastPressed = 'operand'
-            mode = 'none'
-        }
-        x += btn.innerHTML
-        if (x >= 1000000000) {
-            displayX = parseFloat(x).toExponential(5).toString()
-            current.innerHTML = displayX;
-        } else {
-            current.innerHTML = x; 
-        }
-        lastPressed = 'operand';
+        appendNumber(btn.innerHTML)
     }
 })
 
 operators.forEach(btn => {
     btn.onclick = () => {
-        if (lastPressed == 'operator') {
-            mode = btn.innerHTML;
-            updateHistory(btn);
-        } else {
-            if (lastPressed != 'evaluate') {
-            operate(pastNum, x)
-            }
-            x = '';
-            mode = btn.innerHTML;
-            lastPressed = 'operator';
-            updateHistory(btn);
-        }
+        setOperation(btn.innerHTML)
     }
 })
 
@@ -184,8 +214,6 @@ power.onclick = () => {
     updateHistory(power);
 }
 
-evaluate.onclick = () => {;
-    lastPressed = 'evaluate';
-    updateHistory(evaluate);
-    operate(pastNum, x);
+equals.onclick = () => {;
+    evaluate()
 }
