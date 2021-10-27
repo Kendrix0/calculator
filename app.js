@@ -9,22 +9,39 @@ const sign = document.querySelector('.sign');
 const power = document.querySelector('.power');
 
 let x = '';
-let expression = [0,''];
+let pastNum = '0';
+let mode = 'none';
+let answer = x;
 
-function operate(operands, operator) {
-    return operands[0]
+function operate(num1, num2) {
+    if (mode == 'power') {
+        answer = (parseFloat(num1) ** parseFloat(num2));
+    } else if (mode == '÷') {
+        answer = (parseFloat(num1) / parseFloat(num2));
+    } else if (mode == '×') {
+        answer = (parseFloat(num1) * parseFloat(num2));
+    } else if (mode == '+') {
+        answer = (parseFloat(num1) + parseFloat(num2));
+    } else if (mode == '-') {
+        answer = (parseFloat(num1) - parseFloat(num2));
+    } else {
+        answer = parseFloat(num2);
+    }
+    pastNum = answer;
+    return answer
 }
 
 function cleanse() {
     x = '';
     current.innerHTML = '0';
-    expression.splice(0,2,x)
 }
 
 allClear.onclick = () => {
     history.innerHTML = ''
     cleanse();
-    expression = [0, '', ''];
+    pastNum = '0'
+    x = ''
+    mode = 'none'
 }
 
 clear.onclick = () => {
@@ -32,18 +49,20 @@ clear.onclick = () => {
 }
 
 window.addEventListener('keydown', (e) => {
+    x = x.toString();
     if (e.keyCode == 8) {
-        if (-1 < x/10 && x/10 < 1) {
-            x = 0;
-            current.innerHTML = x;
-            expression.splice(0,1,Number(x));
+        if (!(x.length > 1) || ((x[0]=='-') && (x.length <= 2))) {
+            x = '';
+            current.innerHTML = 0;
+            nums[1] = parseFloat(x);
         } else {
             newX = parseFloat(x.toString().slice(0,-1));
             x = newX
             current.innerHTML = newX;
-            expression.splice(0,1,Number(newX))
+            nums[1] = parseFloat(newX);
         }
-
+    } else {
+        return
     }
 })
 
@@ -51,34 +70,33 @@ operands.forEach(btn => {
     btn.onclick = () => {
         x += btn.innerHTML
         current.innerHTML = x;
-        expression.splice(0,1,Number(x))
     }
 })
 
 operators.forEach(btn => {
     btn.onclick = () => {
-        history.innerHTML = x + btn.innerHTML;
-        expression.splice(0,1,x);
-        x = ''
-        if (expression[1] !== '') {
-            operate(expression, btn.innerHTML)
-        }
+        x = '';
+        mode = btn.innerHTML;
+        history.innerHTML = pastNum + btn.innerHTML;
     }
 })
 
 sign.onclick = () => {
-    negX = parseFloat(Number(x) * -1);
+    negX = parseFloat(answer) * -1;
     x = negX;
-    expression.splice(0,1,negX);
-    current.innerHTML = negX;
+    current.innerHTML = x;
 }
 
 power.onclick = () => {
-    expression.splice(1,1, '**');
     current.innerHTML = x + '^';
 }
 
-evaluate.onclick = () => {
-    history.innerHTML = operate(expression);
-    console.log(operate(expression))
+evaluate.onclick = () => {;
+    if (mode=='none') {
+        history.innerHTML = x
+    } else {
+    history.innerHTML = pastNum + mode + x + '='
+    }
+    console.log(operate(pastNum, x));
+    current.innerHTML = answer
 }
