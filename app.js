@@ -191,7 +191,7 @@ operators.forEach(btn => {
 })
 
 sign.onclick = () => {
-    if ((current.innerHTML === x) || lastPressed == 'operator') {
+    if ((current.innerHTML === x.toString()) || lastPressed == 'operator') {
         if (x=='') {
             x += '-'
         } else {
